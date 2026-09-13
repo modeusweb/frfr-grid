@@ -9,6 +9,7 @@ type Props = {
   selectedAreaId: string | null;
   onSelectionComplete: (startCol: number, startRow: number, endCol: number, endRow: number) => void;
   onSelectArea: (areaId: string | null) => void;
+  onRenameArea: (areaId: string) => void;
   onResizeArea: (areaId: string, endColumn: number, endRow: number) => void;
   onMoveArea: (areaId: string, startColumn: number, startRow: number) => void;
 };
@@ -27,6 +28,7 @@ export default function GridEditor({
   selectedAreaId,
   onSelectionComplete,
   onSelectArea,
+  onRenameArea,
   onResizeArea,
   onMoveArea,
 }: Props) {
@@ -401,8 +403,8 @@ export default function GridEditor({
   };
 
   return (
-    <div className="flex items-center justify-center h-full p-6 bg-surface-50 dark:bg-surface-950">
-      <div className="relative w-full max-w-4xl">
+    <div className="h-full overflow-auto p-6 bg-surface-50 dark:bg-surface-950">
+      <div className="relative w-full max-w-4xl min-w-[560px] m-auto">
         {!isPreviewMode && config.areas.length === 0 && (
           <div className="absolute -top-8 left-0 right-0 text-center text-sm text-surface-500 dark:text-surface-400">
             Выделите клетки, чтобы создать первую область
@@ -475,6 +477,9 @@ export default function GridEditor({
                   }}
                   onClick={() => {
                     if (area && !isPreviewMode) onSelectArea(area.id);
+                  }}
+                  onDoubleClick={() => {
+                    if (area && !isPreviewMode) onRenameArea(area.id);
                   }}
                 />
               );
