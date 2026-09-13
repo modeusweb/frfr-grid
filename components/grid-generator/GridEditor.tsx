@@ -49,7 +49,9 @@ export default function GridEditor({
     valid: boolean;
   } | null>(null);
   const [isMoving, setIsMoving] = useState(false);
-  const moveOriginRef = useRef<{
+  const lastClickRef = useRef<{ areaId: string; time: number } | null>(null);
+
+    const moveOriginRef = useRef<{
     areaId: string;
     offsetCol: number;
     offsetRow: number;
@@ -208,6 +210,16 @@ export default function GridEditor({
       } else if (!origin.moved) {
         // Это был клик по области — выбираем её
         onSelectArea(origin.areaId);
+        // Двойной клик детектируем вручную: браузерный dblclick подавлен
+        // preventDefault() на pointerdown (запрет совместимых mouse-событий)
+        const now = Date.now();
+        const last = lastClickRef.current;
+        if (last && last.areaId === origin.areaId && now - last.time < 350) {
+          lastClickRef.current = null;
+          onRenameArea(origin.areaId);
+        } else {
+          lastClickRef.current = { areaId: origin.areaId, time: now };
+        }
       }
       moveOriginRef.current = null;
       setMoveState(null);
@@ -239,6 +251,7 @@ export default function GridEditor({
     moveState,
     onMoveArea,
     onSelectArea,
+    onRenameArea,
   ]);
 
   const handlePointerLeave = useCallback(() => {
@@ -412,7 +425,7 @@ export default function GridEditor({
         )}
         <div
           ref={containerRef}
-          className={`relative bg-white dark:bg-surface-900 shadow-lg border border-surface-200 dark:border-surface-700 touch-none ${
+          className={`relative bg-white dark:bg-surface-900 touch-none ${
             isMovingArea ? "cursor-grabbing" : ""
           }`}
           style={gridStyle}
