@@ -425,7 +425,7 @@ export default function GridEditor({
 
   return (
     <div className="h-full overflow-auto px-6 py-12 bg-surface-50 dark:bg-surface-950">
-      <div className="relative w-full max-w-4xl min-w-[560px] m-auto">
+      <div className="relative w-full h-full min-h-[420px] flex flex-col m-auto">
         {!isPreviewMode && config.areas.length === 0 && (
           <div className="mb-4 text-center text-sm text-surface-500 dark:text-surface-400">
             Выделите клетки, чтобы создать первую область
@@ -433,7 +433,7 @@ export default function GridEditor({
         )}
         <div
           ref={containerRef}
-          className={`relative bg-white dark:bg-surface-900 touch-none ${
+          className={`relative flex-1 bg-white dark:bg-surface-900 touch-none ${
             isMovingArea ? "cursor-grabbing" : ""
           }`}
           style={gridStyle}
@@ -477,7 +477,7 @@ export default function GridEditor({
                   key={`${row}-${col}`}
                       data-col={col}
                       data-row={row}
-                  className={`relative min-h-[60px] transition-colors duration-75 ${
+                  className={`relative min-h-[28px] transition-colors duration-75 ${
                     !isPreviewMode && !area
                       ? "hover:bg-accent-50 dark:hover:bg-accent-900/20 cursor-crosshair border border-dashed border-surface-200 dark:border-surface-700"
                       : ""
