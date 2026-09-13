@@ -425,6 +425,14 @@ export default function GridGenerator() {
     if (selectedArea) setRenameArea(selectedArea);
   }, [selectedArea]);
 
+  const handleOpenRenameById = useCallback(
+    (areaId: string) => {
+      const area = config.areas.find((a) => a.id === areaId);
+      if (area) setRenameArea(area);
+    },
+    [config.areas]
+  );
+
   // Перемещение выбранной области стрелками клавиатуры
   const moveSelectedArea = useCallback(
     (dCol: number, dRow: number) => {
@@ -502,6 +510,7 @@ export default function GridGenerator() {
             selectedAreaId={selectedAreaId}
             onSelectionComplete={handleSelectionComplete}
             onSelectArea={handleSelectArea}
+            onRenameArea={handleOpenRenameById}
             onResizeArea={handleResizeArea}
             onMoveArea={handleMoveArea}
           />
