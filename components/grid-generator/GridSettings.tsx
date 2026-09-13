@@ -120,9 +120,12 @@ export default function GridSettings({ config, onChange }: Props) {
       </div>
 
       <div>
-        <h3 className="text-sm font-medium text-surface-700 dark:text-surface-300 mb-3">
+        <h3 className="text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">
           Размеры колонок
         </h3>
+        <p className="text-xs text-surface-400 dark:text-surface-500 mb-2">
+          fr — доля свободного места, 100px — фиксированная ширина
+        </p>
         <div className="flex flex-wrap gap-2">
           {config.columnSizes.map((track, i) => (
             <TrackSizeInput
@@ -135,9 +138,12 @@ export default function GridSettings({ config, onChange }: Props) {
       </div>
 
       <div>
-        <h3 className="text-sm font-medium text-surface-700 dark:text-surface-300 mb-3">
+        <h3 className="text-sm font-medium text-surface-700 dark:text-surface-300 mb-1">
           Размеры строк
         </h3>
+        <p className="text-xs text-surface-400 dark:text-surface-500 mb-2">
+          fr — доля свободного места, 100px — фиксированная высота
+        </p>
         <div className="flex flex-wrap gap-2">
           {config.rowSizes.map((track, i) => (
             <TrackSizeInput

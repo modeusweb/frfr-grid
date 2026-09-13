@@ -62,22 +62,30 @@ export default function GridEditor({
 
   const getCellFromPoint = useCallback(
     (clientX: number, clientY: number) => {
-      if (!containerRef.current) return null;
-      const rect = containerRef.current.getBoundingClientRect();
-      const x = clientX - rect.left;
-      const y = clientY - rect.top;
-      const cellWidth = rect.width / config.columns;
-      const cellHeight = rect.height / config.rows;
-      const col = Math.floor(x / cellWidth) + 1;
-      const row = Math.floor(y / cellHeight) + 1;
-      return {
-        col: Math.max(1, Math.min(config.columns, col)),
-        row: Math.max(1, Math.min(config.rows, row)),
-      };
+      const container = containerRef.current;
+      if (!container) return null;
+      // Точный hit-test по реальным границам клеток в DOM.
+      // Корректно работает при произвольных размерах треков (например, 1fr 3fr 1fr),
+      // когда клетки не равны между собой.
+      for (const child of Array.from(container.children)) {
+        const el = child as HTMLElement;
+        const colRaw = el.dataset.col;
+        const rowRaw = el.dataset.row;
+        if (!colRaw || !rowRaw) continue; // служебные оверлеи пропускаем
+        const rect = el.getBoundingClientRect();
+        if (
+          clientX >= rect.left &&
+          clientX < rect.right &&
+          clientY >= rect.top &&
+          clientY < rect.bottom
+        ) {
+          return { col: Number(colRaw), row: Number(rowRaw) };
+        }
+      }
+      return null;
     },
-    [config.columns, config.rows]
+    []
   );
-
   const getAreaAtCell = useCallback(
     (col: number, row: number): GridArea | null => {
       // endColumn и endRow — включительные координаты
@@ -467,6 +475,8 @@ export default function GridEditor({
               return (
                 <div
                   key={`${row}-${col}`}
+                      data-col={col}
+                      data-row={row}
                   className={`relative min-h-[60px] transition-colors duration-75 ${
                     !isPreviewMode && !area
                       ? "hover:bg-accent-50 dark:hover:bg-accent-900/20 cursor-crosshair border border-dashed border-surface-200 dark:border-surface-700"

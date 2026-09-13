@@ -582,8 +582,14 @@ export default function GridGenerator() {
       )}
 
       {showResetConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-          <div className="w-full max-w-sm bg-white dark:bg-surface-900 shadow-2xl p-6">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
+          onClick={() => setShowResetConfirm(false)}
+        >
+          <div
+            className="w-full max-w-sm bg-white dark:bg-surface-900 shadow-2xl p-6"
+            onClick={(e) => e.stopPropagation()}
+          >
             <h3 className="text-lg font-semibold text-surface-900 dark:text-white mb-2">
               Сбросить сетку?
             </h3>
