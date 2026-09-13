@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import {
   ArrowUturnLeftIcon,
   ArrowUturnRightIcon,
@@ -10,6 +11,7 @@ import {
   QuestionMarkCircleIcon,
   BookOpenIcon,
   XCircleIcon,
+  EllipsisVerticalIcon,
 } from "@heroicons/react/24/outline";
 
 type Props = {
@@ -28,6 +30,14 @@ type Props = {
   onShowHelp: () => void;
 };
 
+type OverflowItem = {
+  label: string;
+  Icon: React.ComponentType<{ className?: string }>;
+  onClick: () => void;
+  danger?: boolean;
+  disabled?: boolean;
+};
+
 export default function GridToolbar({
   canUndo,
   canRedo,
@@ -43,9 +53,45 @@ export default function GridToolbar({
   onShowShortcuts,
   onShowHelp,
 }: Props) {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement | null>(null);
+
+  // Закрытие меню по клику вне и по Escape
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onPointerDown = (event: PointerEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setMenuOpen(false);
+      }
+    };
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setMenuOpen(false);
+    };
+    document.addEventListener("pointerdown", onPointerDown);
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", onPointerDown);
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [menuOpen]);
+
+  // Второстепенные действия: на десктопе видны в панели, на мобильных — в меню «…»
+  const overflowItems: OverflowItem[] = [
+    { label: "Поделиться ссылкой", Icon: ShareIcon, onClick: onShare },
+    {
+      label: "Очистить области",
+      Icon: XCircleIcon,
+      onClick: onClearAreas,
+      disabled: !canClearAreas,
+    },
+    { label: "Сбросить сетку", Icon: TrashIcon, onClick: onReset, danger: true },
+    { label: "Инструкция", Icon: BookOpenIcon, onClick: onShowHelp },
+    { label: "Горячие клавиши", Icon: QuestionMarkCircleIcon, onClick: onShowShortcuts },
+  ];
+
   return (
-    <header className="flex items-center justify-between px-4 py-3 bg-white dark:bg-surface-900 border-b border-surface-200 dark:border-surface-800">
-      <div className="header-in flex items-center gap-3 select-none">
+    <header className="flex items-center justify-between px-3 sm:px-4 py-3 bg-white dark:bg-surface-900 border-b border-surface-200 dark:border-surface-800">
+      <div className="header-in flex items-center gap-2 sm:gap-3 select-none shrink-0">
         <div
           className="grid w-8 h-8 grid-cols-2 gap-[3px] p-[5px] bg-surface-100 dark:bg-surface-800 border border-surface-200 dark:border-surface-700"
           aria-hidden="true"
@@ -59,7 +105,7 @@ export default function GridToolbar({
           <h1 className="font-mono text-lg font-semibold tracking-tight text-surface-900 dark:text-white">
             Fr<span className="text-accent-500">Fr</span>
           </h1>
-          <span className="text-[10px] font-medium uppercase tracking-[0.14em] text-surface-400 dark:text-surface-500">
+          <span className="hidden sm:block text-[10px] font-medium uppercase tracking-[0.14em] text-surface-400 dark:text-surface-500">
             CSS Grid Генератор
           </span>
         </div>
@@ -86,7 +132,7 @@ export default function GridToolbar({
           <ArrowUturnRightIcon className="w-5 h-5" />
         </button>
 
-        <div className="w-px h-6 bg-surface-200 dark:bg-surface-700 mx-1" />
+        <div className="hidden lg:block w-px h-6 bg-surface-200 dark:bg-surface-700 mx-1" />
 
         <button
           onClick={onTogglePreview}
@@ -103,7 +149,7 @@ export default function GridToolbar({
 
         <button
           onClick={onShare}
-          className="p-2 text-surface-500 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
+          className="hidden lg:block p-2 text-surface-500 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
           aria-label="Поделиться"
           title="Поделиться ссылкой"
         >
@@ -122,27 +168,27 @@ export default function GridToolbar({
         <button
           onClick={onClearAreas}
           disabled={!canClearAreas}
-          className="flex items-center gap-1.5 px-2 sm:px-2.5 py-1.5 text-xs text-surface-600 hover:bg-surface-100 dark:text-surface-400 dark:hover:bg-surface-800 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+          className="hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-surface-600 hover:bg-surface-100 dark:text-surface-400 dark:hover:bg-surface-800 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
           title="Удалить все области"
         >
           <XCircleIcon className="w-4 h-4" />
-          <span className="hidden sm:inline">Очистить</span>
+          <span>Очистить</span>
         </button>
 
         <button
           onClick={onReset}
-          className="p-2 text-surface-500 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-900/20 dark:hover:text-red-400 transition-colors"
+          className="hidden lg:block p-2 text-surface-500 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-900/20 dark:hover:text-red-400 transition-colors"
           aria-label="Сбросить"
           title="Сбросить сетку"
         >
           <TrashIcon className="w-5 h-5" />
         </button>
 
-        <div className="w-px h-6 bg-surface-200 dark:bg-surface-700 mx-1" />
+        <div className="hidden lg:block w-px h-6 bg-surface-200 dark:bg-surface-700 mx-1" />
 
         <button
           onClick={onShowHelp}
-          className="p-2 text-surface-500 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
+          className="hidden lg:block p-2 text-surface-500 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
           aria-label="Инструкция"
           title="Как пользоваться"
         >
@@ -151,12 +197,59 @@ export default function GridToolbar({
 
         <button
           onClick={onShowShortcuts}
-          className="p-2 text-surface-500 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
+          className="hidden lg:block p-2 text-surface-500 hover:bg-surface-100 dark:hover:bg-surface-800 transition-colors"
           aria-label="Горячие клавиши"
           title="Горячие клавиши (?)"
         >
           <QuestionMarkCircleIcon className="w-5 h-5" />
         </button>
+
+        {/* На мобильных второстепенные действия собраны в меню «…» */}
+        <div ref={menuRef} className="relative lg:hidden">
+          <button
+            onClick={() => setMenuOpen((open) => !open)}
+            className={`p-2 transition-colors ${
+              menuOpen
+                ? "bg-accent-100 text-accent-600 dark:bg-accent-900 dark:text-accent-400"
+                : "text-surface-500 hover:bg-surface-100 dark:hover:bg-surface-800"
+            }`}
+            aria-label="Ещё действия"
+            aria-haspopup="menu"
+            aria-expanded={menuOpen}
+            title="Ещё действия"
+          >
+            <EllipsisVerticalIcon className="w-5 h-5" />
+          </button>
+
+          {menuOpen && (
+            <div
+              role="menu"
+              aria-label="Дополнительные действия"
+              className="absolute right-0 top-full mt-2 w-56 py-1 bg-white dark:bg-surface-800 border border-surface-200 dark:border-surface-700 shadow-lg z-50"
+            >
+              {overflowItems.map(({ label, Icon, onClick, danger, disabled }) => (
+                <button
+                  key={label}
+                  role="menuitem"
+                  onClick={() => {
+                    if (disabled) return;
+                    setMenuOpen(false);
+                    onClick();
+                  }}
+                  disabled={disabled}
+                  className={`w-full flex items-center gap-2.5 px-3 py-2 text-sm transition-colors disabled:opacity-30 disabled:cursor-not-allowed ${
+                    danger
+                      ? "text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20"
+                      : "text-surface-600 hover:bg-surface-100 dark:text-surface-300 dark:hover:bg-surface-700"
+                  }`}
+                >
+                  <Icon className="w-5 h-5 shrink-0" />
+                  <span className="truncate">{label}</span>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </header>
   );

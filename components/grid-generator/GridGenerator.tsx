@@ -3,6 +3,7 @@
 import { useState, useCallback, useEffect, useMemo, useRef } from "react";
 import { GridConfig, GridArea, GridTrack } from "@/types/grid";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
+import { useBackdropClose } from "@/hooks/useBackdropClose";
 import { useGridHistory } from "@/hooks/useGridHistory";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import { configFromURL, configToURL } from "@/lib/serialize-grid";
@@ -12,6 +13,7 @@ import GridSettings from "./GridSettings";
 import GridEditor from "./GridEditor";
 import CodePanel from "./CodePanel";
 import TemplatePicker from "./TemplatePicker";
+import type { Template } from "@/lib/templates";
 import ShortcutsModal from "./ShortcutsModal";
 import InstructionsModal from "./InstructionsModal";
 import RenameAreaModal from "./RenameAreaModal";
@@ -153,6 +155,12 @@ export default function GridGenerator() {
     "grid-config",
     null
   );
+  // Последний применённый шаблон: подсвечивается в попапе,
+  // сохраняется между открытиями и перезагрузками страницы
+  const [activeTemplateId, setActiveTemplateId] = useLocalStorage<string | null>(
+    "active-template-id",
+    null
+  );
   const [isPreviewMode, setIsPreviewMode] = useState(false);
   const [selectedAreaId, setSelectedAreaId] = useState<string | null>(null);
   const [showTemplates, setShowTemplates] = useState(false);
@@ -161,6 +169,8 @@ export default function GridGenerator() {
   const [mobileTab, setMobileTab] = useState<MobileTab>("grid");
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [renameArea, setRenameArea] = useState<GridArea | null>(null);
+  // Безопасное закрытие по бэкдропу для диалога подтверждения сброса
+  const resetConfirmBackdrop = useBackdropClose(() => setShowResetConfirm(false));
   const [toast, setToast] = useState<Toast | null>(null);
   const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -189,11 +199,13 @@ export default function GridGenerator() {
     const urlConfig = configFromURL(params);
     if (urlConfig) {
       reset(urlConfig);
+      // Из ссылки пришла произвольная конфигурация — снимаем выделение шаблона
+      setActiveTemplateId(null);
     } else if (storedConfig) {
       reset(storedConfig);
     }
     setIsReady(true);
-  }, [isHydrated, storedConfig, reset]);
+  }, [isHydrated, storedConfig, reset, setActiveTemplateId]);
 
   // --- Автосохранение текущей конфигурации в localStorage ---
   useEffect(() => {
@@ -398,16 +410,19 @@ export default function GridGenerator() {
   const handleReset = useCallback(() => {
     reset(defaultConfig);
     setSelectedAreaId(null);
+    setActiveTemplateId(null);
     setShowResetConfirm(false);
     showToast("Сетка сброшена");
-  }, [reset, showToast]);
+  }, [reset, setActiveTemplateId, showToast]);
 
   const handleSelectTemplate = useCallback(
-    (templateConfig: GridConfig) => {
-      reset(templateConfig);
+    (template: Template) => {
+      reset(template.config);
+      setActiveTemplateId(template.id);
       setSelectedAreaId(null);
+      showToast(`Шаблон «${template.name}» применён`);
     },
-    [reset]
+    [reset, setActiveTemplateId, showToast]
   );
 
   const handleShare = useCallback(() => {
@@ -576,6 +591,7 @@ export default function GridGenerator() {
 
       <TemplatePicker
         isOpen={showTemplates}
+        activeTemplateId={activeTemplateId}
         onClose={() => setShowTemplates(false)}
         onSelectTemplate={handleSelectTemplate}
       />
@@ -595,7 +611,7 @@ export default function GridGenerator() {
       {showResetConfirm && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
-          onClick={() => setShowResetConfirm(false)}
+          {...resetConfirmBackdrop}
         >
           <div
             className="w-full max-w-sm bg-white dark:bg-surface-900 shadow-2xl p-6"

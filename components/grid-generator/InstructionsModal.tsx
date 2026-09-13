@@ -1,6 +1,7 @@
 "use client";
 
 import { XMarkIcon, BookOpenIcon } from "@heroicons/react/24/outline";
+import { useBackdropClose } from "@/hooks/useBackdropClose";
 
 type Step = {
   title: string;
@@ -41,12 +42,14 @@ type Props = {
 };
 
 export default function InstructionsModal({ isOpen, onClose }: Props) {
+  const backdropClose = useBackdropClose(onClose);
+
   if (!isOpen) return null;
 
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
-      onClick={onClose}
+      {...backdropClose}
     >
       <div
         className="w-full max-w-lg max-h-[85vh] flex flex-col bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-700 shadow-2xl overflow-hidden"

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { GridArea } from "@/types/grid";
+import { useBackdropClose } from "@/hooks/useBackdropClose";
 import { isValidAreaName } from "@/lib/validate-grid";
 
 type Props = {
@@ -13,6 +14,7 @@ type Props = {
 export default function RenameAreaModal({ area, onRename, onClose }: Props) {
   const [name, setName] = useState(area.name);
   const [error, setError] = useState<string | null>(null);
+  const backdropClose = useBackdropClose(onClose);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,7 +34,7 @@ export default function RenameAreaModal({ area, onRename, onClose }: Props) {
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
-      onClick={onClose}
+      {...backdropClose}
     >
       <div
         className="w-full max-w-sm bg-white dark:bg-surface-900 shadow-2xl p-6"

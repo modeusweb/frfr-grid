@@ -27,7 +27,7 @@ const TRACK_PRESETS = [
 ];
 
 export default function GridSettings({ config, onChange }: Props) {
-  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [showAdvanced, setShowAdvanced] = useState(true);
 
   const updateColumns = (delta: number) => {
     const newColumns = Math.max(1, Math.min(12, config.columns + delta));
