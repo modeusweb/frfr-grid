@@ -424,7 +424,7 @@ export default function GridEditor({
   };
 
   return (
-    <div className="h-full overflow-auto px-6 py-12 bg-surface-50 dark:bg-surface-950">
+    <div className="h-full overflow-auto px-3 py-4 sm:px-6 sm:py-12 bg-surface-50 dark:bg-surface-950">
       <div className="relative w-full h-full min-h-[420px] flex flex-col m-auto">
         {!isPreviewMode && config.areas.length === 0 && (
           <div className="mb-4 text-center text-sm text-surface-500 dark:text-surface-400">

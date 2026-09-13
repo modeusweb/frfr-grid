@@ -15,6 +15,7 @@ import TemplatePicker from "./TemplatePicker";
 import ShortcutsModal from "./ShortcutsModal";
 import InstructionsModal from "./InstructionsModal";
 import RenameAreaModal from "./RenameAreaModal";
+import MobileNav, { type MobileTab } from "./MobileNav";
 
 const AREA_COLORS = [
   "rgba(59, 130, 246, 0.3)",
@@ -157,6 +158,7 @@ export default function GridGenerator() {
   const [showTemplates, setShowTemplates] = useState(false);
   const [showShortcuts, setShowShortcuts] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
+  const [mobileTab, setMobileTab] = useState<MobileTab>("grid");
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [renameArea, setRenameArea] = useState<GridArea | null>(null);
   const [toast, setToast] = useState<Toast | null>(null);
@@ -501,12 +503,17 @@ export default function GridGenerator() {
       <div className="flex-1 flex overflow-hidden">
         <aside
           id="nastrojki"
-          className="w-72 border-r border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-900 overflow-hidden"
+          className={`border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-900 overflow-hidden ${
+            mobileTab === "settings" ? "flex-1" : "hidden"
+          } lg:block lg:flex-none lg:w-72 lg:border-r`}
         >
           <GridSettings config={config} onChange={handleConfigChange} />
         </aside>
 
-        <main id="setka" className="flex-1 relative overflow-hidden">
+        <main id="setka"
+              className={`relative overflow-hidden ${
+                mobileTab === "grid" ? "flex-1" : "hidden"
+              } lg:flex-1`}>
           <GridEditor
             config={config}
             isPreviewMode={isPreviewMode}
@@ -557,11 +564,15 @@ export default function GridGenerator() {
 
         <aside
           id="kod"
-          className="w-96 border-l border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-900 overflow-hidden"
+          className={`border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-900 overflow-hidden ${
+            mobileTab === "code" ? "flex-1" : "hidden"
+          } lg:block lg:flex-none lg:w-96 lg:border-l`}
         >
           <CodePanel config={config} />
         </aside>
       </div>
+
+      <MobileNav activeTab={mobileTab} onChange={setMobileTab} />
 
       <TemplatePicker
         isOpen={showTemplates}
@@ -626,7 +637,7 @@ export default function GridGenerator() {
           {toast.message}
         </div>
       )}
-<footer className="shrink-0 border-t border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-900 px-4 py-1.5 flex items-center justify-center gap-1.5">
+<footer className="hidden lg:flex shrink-0 border-t border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-900 px-4 py-1.5 items-center justify-center gap-1.5">
           <a
             href="https://github.com/modeusweb/frfr-grid"
             target="_blank"

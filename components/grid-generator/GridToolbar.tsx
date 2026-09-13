@@ -122,11 +122,11 @@ export default function GridToolbar({
         <button
           onClick={onClearAreas}
           disabled={!canClearAreas}
-          className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-surface-600 hover:bg-surface-100 dark:text-surface-400 dark:hover:bg-surface-800 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+          className="flex items-center gap-1.5 px-2 sm:px-2.5 py-1.5 text-xs text-surface-600 hover:bg-surface-100 dark:text-surface-400 dark:hover:bg-surface-800 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
           title="Удалить все области"
         >
           <XCircleIcon className="w-4 h-4" />
-          Очистить
+          <span className="hidden sm:inline">Очистить</span>
         </button>
 
         <button
