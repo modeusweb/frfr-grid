@@ -23,7 +23,6 @@ const GAP_PRESETS = [
 const TRACK_PRESETS = [
   { label: "1fr", value: { value: 1, unit: "fr" as const } },
   { label: "2fr", value: { value: 2, unit: "fr" as const } },
-  { label: "auto", value: "auto" as const },
   { label: "100px", value: { value: 100, unit: "px" as const } },
 ];
 

@@ -49,7 +49,7 @@ export default function InstructionsModal({ isOpen, onClose }: Props) {
       onClick={onClose}
     >
       <div
-        className="w-full max-w-lg bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-700 shadow-2xl overflow-hidden"
+        className="w-full max-w-lg max-h-[85vh] flex flex-col bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-700 shadow-2xl overflow-hidden"
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
@@ -71,7 +71,7 @@ export default function InstructionsModal({ isOpen, onClose }: Props) {
           </button>
         </div>
 
-        <ol className="p-6 space-y-4">
+        <ol className="p-6 space-y-4 overflow-y-auto">
           {steps.map((step, i) => (
             <li key={step.title} className="flex gap-3">
               <span className="flex-shrink-0 w-6 h-6 flex items-center justify-center text-xs font-semibold text-accent-600 dark:text-accent-400 bg-accent-100 dark:bg-accent-900/40">
