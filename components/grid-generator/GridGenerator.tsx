@@ -499,11 +499,14 @@ export default function GridGenerator() {
       />
 
       <div className="flex-1 flex overflow-hidden">
-        <aside className="w-72 border-r border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-900 overflow-hidden">
+        <aside
+          id="nastrojki"
+          className="w-72 border-r border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-900 overflow-hidden"
+        >
           <GridSettings config={config} onChange={handleConfigChange} />
         </aside>
 
-        <main className="flex-1 relative overflow-hidden">
+        <main id="setka" className="flex-1 relative overflow-hidden">
           <GridEditor
             config={config}
             isPreviewMode={isPreviewMode}
@@ -552,7 +555,10 @@ export default function GridGenerator() {
           )}
         </main>
 
-        <aside className="w-96 border-l border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-900 overflow-hidden">
+        <aside
+          id="kod"
+          className="w-96 border-l border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-900 overflow-hidden"
+        >
           <CodePanel config={config} />
         </aside>
       </div>

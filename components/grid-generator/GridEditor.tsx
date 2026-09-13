@@ -416,10 +416,10 @@ export default function GridEditor({
   };
 
   return (
-    <div className="h-full overflow-auto p-6 bg-surface-50 dark:bg-surface-950">
+    <div className="h-full overflow-auto px-6 py-12 bg-surface-50 dark:bg-surface-950">
       <div className="relative w-full max-w-4xl min-w-[560px] m-auto">
         {!isPreviewMode && config.areas.length === 0 && (
-          <div className="absolute -top-8 left-0 right-0 text-center text-sm text-surface-500 dark:text-surface-400">
+          <div className="mb-4 text-center text-sm text-surface-500 dark:text-surface-400">
             Выделите клетки, чтобы создать первую область
           </div>
         )}
@@ -591,7 +591,7 @@ export default function GridEditor({
           </div>
         </div>
         {!isPreviewMode && (
-          <div className="mt-4 flex justify-center gap-4 text-xs text-surface-500 dark:text-surface-400">
+          <div className="mt-6 flex justify-center gap-4 text-xs text-surface-500 dark:text-surface-400">
             <span>
               {config.columns} {plural(config.columns, "колонка", "колонки", "колонок")} ×{" "}
               {config.rows} {plural(config.rows, "строка", "строки", "строк")}
