@@ -15,7 +15,7 @@ export default function TemplatePicker({ isOpen, onClose, onSelectTemplate }: Pr
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-      <div className="w-full max-w-2xl max-h-[80vh] bg-white dark:bg-surface-900 shadow-2xl overflow-hidden">
+      <div className="w-full max-w-2xl max-h-[80vh] flex flex-col bg-white dark:bg-surface-900 shadow-2xl overflow-hidden">
         <div className="flex items-center justify-between px-6 py-4 border-b border-surface-200 dark:border-surface-700">
           <h2 className="text-lg font-semibold text-surface-900 dark:text-white">
             Шаблоны
@@ -29,7 +29,7 @@ export default function TemplatePicker({ isOpen, onClose, onSelectTemplate }: Pr
           </button>
         </div>
 
-        <div className="overflow-y-auto p-6">
+        <div className="flex-1 overflow-y-auto p-6 min-h-0">
           {templateCategories.map((category) => (
             <div key={category} className="mb-6 last:mb-0">
               <h3 className="text-sm font-medium text-surface-500 dark:text-surface-400 mb-3">

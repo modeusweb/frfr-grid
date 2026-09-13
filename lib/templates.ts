@@ -155,7 +155,7 @@ export const templates: Template[] = [
       columns: 3,
       rows: 3,
       columnSizes: [{ value: 1, unit: "fr" }, { value: 2, unit: "fr" }, { value: 1, unit: "fr" }],
-      rowSizes: ["auto", { value: 1, unit: "fr" }, "auto"],
+      rowSizes: [{ value: 1, unit: "fr" }, { value: 3, unit: "fr" }, { value: 1, unit: "fr" }],
       columnGap: "24px",
       rowGap: "24px",
       containerClass: "grid",

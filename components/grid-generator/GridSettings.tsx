@@ -222,6 +222,8 @@ function TrackSizeInput({
   value: GridTrack;
   onChange: (track: GridTrack) => void;
 }) {
+  const [isOpen, setIsOpen] = useState(false);
+
   const formatTrackLabel = (track: GridTrack): string => {
     if (track === "auto") return "auto";
     if (track === "min-content") return "min";
@@ -230,34 +232,57 @@ function TrackSizeInput({
     return `${track.value}${track.unit}`;
   };
 
-  const [isOpen, setIsOpen] = useState(false);
+  const currentLabel = formatTrackLabel(value);
 
   return (
     <div className="relative">
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        type="button"
+        onClick={() => setIsOpen((v) => !v)}
+        aria-haspopup="listbox"
+        aria-expanded={isOpen}
         className="px-3 py-1.5 text-xs border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 hover:border-accent-500 transition-colors"
+        title={`Размер трека: ${currentLabel}`}
       >
-        {formatTrackLabel(value)}
+        {currentLabel}
       </button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 mt-1 z-10 bg-white dark:bg-surface-800 border border-surface-200 dark:border-surface-700 shadow-lg p-2 min-w-[120px]">
-          <div className="grid grid-cols-2 gap-1">
-            {TRACK_PRESETS.map((preset) => (
-              <button
-                key={preset.label}
-                onClick={() => {
-                  onChange(preset.value);
-                  setIsOpen(false);
-                }}
-                className="px-2 py-1 text-xs hover:bg-surface-100 dark:hover:bg-surface-700 transition-colors"
-              >
-                {preset.label}
-              </button>
-            ))}
+        <>
+          <div
+            className="fixed inset-0 z-10 bg-transparent"
+            onClick={() => setIsOpen(false)}
+            aria-hidden="true"
+          />
+          <div
+            role="listbox"
+            aria-label="Выберите размер трека"
+            className="absolute top-full left-0 mt-1 z-20 bg-white dark:bg-surface-800 border border-surface-200 dark:border-surface-700 shadow-lg p-1.5 min-w-[120px]"
+          >
+            {TRACK_PRESETS.map((preset) => {
+              const isSelected = currentLabel === preset.label;
+              return (
+                <button
+                  key={preset.label}
+                  type="button"
+                  role="option"
+                  aria-selected={isSelected}
+                  onClick={() => {
+                    if (!isSelected) onChange(preset.value);
+                    setIsOpen(false);
+                  }}
+                  className={`block w-full text-left px-2 py-1.5 text-xs transition-colors ${
+                    isSelected
+                      ? "bg-accent-100 text-accent-700 dark:bg-accent-900/40 dark:text-accent-400"
+                      : "hover:bg-surface-100 dark:hover:bg-surface-700"
+                  }`}
+                >
+                  {preset.label}
+                </button>
+              );
+            })}
           </div>
-        </div>
+        </>
       )}
     </div>
   );
