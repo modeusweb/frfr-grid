@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { ChevronDownIcon, PlusIcon, MinusIcon } from "@heroicons/react/24/outline";
+import { useEffect, useRef, useState } from "react";
+import { PlusIcon, MinusIcon } from "@heroicons/react/24/outline";
 import { GridConfig, GridTrack } from "@/types/grid";
 
 type Props = {
@@ -27,7 +27,6 @@ const TRACK_PRESETS = [
 ];
 
 export default function GridSettings({ config, onChange }: Props) {
-  const [showAdvanced, setShowAdvanced] = useState(true);
 
   const updateColumns = (delta: number) => {
     const newColumns = Math.max(1, Math.min(12, config.columns + delta));
@@ -176,34 +175,25 @@ export default function GridSettings({ config, onChange }: Props) {
         </div>
       </div>
 
-      <button
-        onClick={() => setShowAdvanced(!showAdvanced)}
-        className="flex items-center gap-2 text-sm text-surface-600 dark:text-surface-400 hover:text-surface-900 dark:hover:text-white transition-colors"
-      >
-        <ChevronDownIcon
-          className={`w-4 h-4 transition-transform ${showAdvanced ? "rotate-180" : ""}`}
-        />
-        Дополнительные настройки
-      </button>
-
-      {showAdvanced && (
-        <div className="space-y-4 pt-2 border-t border-surface-200 dark:border-surface-800">
+      <div>
+        <h3 className="text-sm font-medium text-surface-700 dark:text-surface-300 mb-3">
+          Дополнительные настройки
+        </h3>
+        <div className="space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-sm text-surface-600 dark:text-surface-400">Column gap</span>
-            <input
-              type="text"
+            <GapInput
               value={config.columnGap}
-              onChange={(e) => onChange({ columnGap: e.target.value })}
-              className="w-20 px-2 py-1 text-sm border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800"
+              onChange={(v) => onChange({ columnGap: v })}
+              ariaLabel="Column gap в пикселях"
             />
           </div>
           <div className="flex items-center justify-between">
             <span className="text-sm text-surface-600 dark:text-surface-400">Row gap</span>
-            <input
-              type="text"
+            <GapInput
               value={config.rowGap}
-              onChange={(e) => onChange({ rowGap: e.target.value })}
-              className="w-20 px-2 py-1 text-sm border border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800"
+              onChange={(v) => onChange({ rowGap: v })}
+              ariaLabel="Row gap в пикселях"
             />
           </div>
           <div className="flex items-center justify-between">
@@ -216,7 +206,93 @@ export default function GridSettings({ config, onChange }: Props) {
             />
           </div>
         </div>
-      )}
+      </div>
+    </div>
+  );
+}
+
+// Gap задаётся только в px; в конфиге значение хранится строкой, например "16px"
+// 500px — разумный потолок: большие промежутки в сетке бессмысленны
+const MAX_GAP = 500;
+
+/** Число из поля ввода: пусто или некорректно — null */
+function parseGapNumber(text: string): number | null {
+  if (text.trim() === "") return null;
+  const n = Number(text);
+  if (!Number.isFinite(n) || n < 0 || n > MAX_GAP) return null;
+  return n;
+}
+
+/** Первое число в значении конфига (для отображения, даже если единица не px) */
+function gapConfigToText(raw: string): string {
+  const match = raw.match(/(\d+(?:\.\d+)?)/);
+  return match ? match[1] : "";
+}
+
+function GapInput({
+  value,
+  onChange,
+  ariaLabel,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  ariaLabel: string;
+}) {
+  const [text, setText] = useState(gapConfigToText(value));
+  const [invalid, setInvalid] = useState(false);
+  const lastEmittedRef = useRef(value);
+  // Последний keydown был удалением (Backspace/Delete) — разрешаем очистку поля
+  const deletingRef = useRef(false);
+
+  // Синхронизация при внешнем изменении (пресеты, undo, share-ссылка)
+  useEffect(() => {
+    if (value === lastEmittedRef.current) return;
+    lastEmittedRef.current = value;
+    setText(gapConfigToText(value));
+    setInvalid(false);
+  }, [value]);
+
+  const handleText = (raw: string) => {
+    // type="number" отдаёт "" и при запрещённых символах (буквы, "+", "-", "e") —
+    // не затираем набранное, если это не явное удаление
+    if (raw === "" && text !== "" && !deletingRef.current) return;
+    setText(raw);
+    const n = parseGapNumber(raw);
+    if (n === null) {
+      setInvalid(raw.trim() !== "");
+      return;
+    }
+    setInvalid(false);
+    const str = `${n}px`;
+    if (str !== value) {
+      lastEmittedRef.current = str;
+      onChange(str);
+    }
+  };
+
+  return (
+    <div className="flex items-center">
+      <input
+        type="number"
+        min={0}
+        max={MAX_GAP}
+        step={1}
+        value={text}
+        onKeyDown={(e) => {
+          deletingRef.current = e.key === "Backspace" || e.key === "Delete";
+        }}
+        onChange={(e) => handleText(e.target.value)}
+        aria-label={ariaLabel}
+        className={`w-14 px-2 py-1 text-sm border bg-white dark:bg-surface-800 font-mono outline-none focus:border-accent-500 transition-colors ${
+          invalid ? "border-red-400" : "border-surface-200 dark:border-surface-700"
+        }`}
+      />
+      <span
+        className="pl-1.5 pr-1 text-xs font-mono text-surface-400 dark:text-surface-500 select-none"
+        aria-hidden="true"
+      >
+        px
+      </span>
     </div>
   );
 }
