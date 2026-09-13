@@ -102,7 +102,7 @@ export default function CodePanel({ config }: Props) {
             {config.areas.map((area) => (
               <span
                 key={area.id}
-                className="inline-flex items-center gap-1.5 px-2 py-1 text-xs bg-surface-100 dark:bg-surface-800"
+                className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs bg-surface-100 dark:bg-surface-800 border border-surface-200 dark:border-surface-700 max-w-[160px] truncate"
               >
                 <span
                   className="w-2 h-2 "

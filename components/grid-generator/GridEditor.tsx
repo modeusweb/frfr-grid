@@ -562,9 +562,11 @@ export default function GridEditor({
                     gridRow: `${bounds.startRow} / ${bounds.endRow + 1}`,
                   }}
                 >
-                  <span className="absolute inset-0 flex items-center justify-center text-sm font-medium text-surface-700 dark:text-surface-300 select-none">
-                    {area.name}
-                  </span>
+                  <span className="absolute inset-0 flex items-center justify-center px-1.5 select-none">
+                        <span className="max-w-full px-2.5 py-1 text-xs font-medium text-white bg-surface-900/55 dark:bg-surface-950/60 border border-white/20 truncate">
+                          {area.name}
+                        </span>
+                      </span>
                   {isResizingThis && resizePreview && (
                     <span className="absolute bottom-1 right-1 z-10 px-1.5 py-0.5 text-[10px] font-mono font-semibold bg-accent-500 text-white shadow">
                       {resizePreview.endColumn - resizePreview.startColumn + 1} ×{" "}
