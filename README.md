@@ -2,6 +2,12 @@
 
 Визуальный генератор CSS Grid: выделяйте области мышкой, настраивайте сетку и получайте готовый CSS- и HTML-код. Задача — рабочий layout за несколько секунд, без глубокого погружения в CSS Grid.
 
+## Демо
+
+Приложение задеплоено на Vercel: **[frfr-grid.vercel.app](https://frfr-grid.vercel.app/)**
+
+Откройте ссылку, выделите клетки сетки мышкой — и готовый CSS-код сразу появится в правой панели.
+
 ## Возможности
 
 - **Визуальный редактор** — сетка до 12 × 12, выделение областей мышью или касанием (Pointer Events)
@@ -47,13 +53,17 @@ app/
   layout.tsx            # метаданные, тема, шрифты
   page.tsx              # единственная страница с генератором
   globals.css           # Tailwind 4, @theme, анимации логотипа
-  favicon.svg           # иконка
+  not-found.tsx         # страница 404
+  robots.ts             # /robots.txt
+  sitemap.ts            # /sitemap.xml
+  manifest.ts           # /manifest.webmanifest (PWA-манифест)
 components/grid-generator/
   GridGenerator.tsx     # корневой компонент: состояние и обработчики
   GridEditor.tsx        # интерактивная сетка: выделение, resize, move
   GridSettings.tsx      # панель настроек (колонки, строки, gap, пресеты)
   GridToolbar.tsx       # верхняя панель
   CodePanel.tsx         # вывод CSS/HTML с подсветкой
+  AreaEditor.tsx        # контекстные действия выбранной области
   TemplatePicker.tsx    # выбор шаблона
   InstructionsModal.tsx # краткая инструкция
   ShortcutsModal.tsx    # горячие клавиши
@@ -71,6 +81,12 @@ lib/
   templates.ts          # готовые шаблоны
 types/
   grid.ts               # модель данных
+scripts/
+  generate-seo-images.mjs # генерация favicon/OG-изображений из favicon.svg (sharp)
+public/
+  favicon.ico, favicon.svg, favicon-16x16.png, favicon-32x32.png
+  apple-touch-icon.png, icon-192.png, icon-512.png
+  og-image.png          # Open Graph, 1200×630
 ```
 
 ## Горячие клавиши
@@ -101,3 +117,29 @@ type GridConfig = {
 ```
 
 Генерация CSS — чистая функция `generateGridCSS(config)`, независимая от React; сериализация (`serialize-grid.ts`) используется и для share-ссылки (`?config=...`), и для автосохранения.
+
+## SEO
+
+- Полные метаданные: canonical, Open Graph (`og:image` 1200×630), Twitter Card, JSON-LD (`WebApplication`)
+- Статические эндпоинты `/robots.txt`, `/sitemap.xml`, `/manifest.webmanifest` — генерируются из `app/robots.ts`, `app/sitemap.ts`, `app/manifest.ts`
+- Иконки всех форматов: `favicon.ico`, PNG 16/32/180/192/512, SVG
+
+Иконки и OG-изображение генерируются из `public/favicon.svg` скриптом (нужна dev-зависимость `sharp`):
+
+```bash
+node scripts/generate-seo-images.mjs
+```
+
+## Деплой
+
+Проект задеплоен на [Vercel](https://frfr-grid.vercel.app/) и деплоится без дополнительной настройки:
+
+```bash
+npx vercel
+```
+
+Пуш в `master` автоматически пересобирает и обновляет демо.
+
+## Лицензия
+
+MIT
